@@ -1,11 +1,23 @@
+using LeadManagement.Data;
+using LeadManagement.Interfaces;
+using LeadManagement.Repository;
+using LeadManagement.Services;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Get connection strings
+var leadDbConnectionStrings = builder.Configuration.GetConnectionString("LeadDbConnection");
 
+
+// Add services to the container.
+builder.Services.AddDbContext<LeadContext>(opts => opts.UseSqlServer(leadDbConnectionStrings));
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<ILeadRepository, LeadRepository>();
 
 var app = builder.Build();
 
